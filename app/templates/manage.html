@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Управление файлами{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Управление файлами</h1>
+
+{% if message %}
+    <div class="message {{ message_type }}">{{ message }}</div>
+{% endif %}
+
+<section class="grid-two">
+    <div class="card">
+        <h2>Автоматическая подгрузка</h2>
+        <p>Получение Excel-файлов с сайта университета по открытым ссылкам.</p>
+        <form action="/files/fetch-from-site" method="post">
+            <button type="submit">Подтянуть файлы с сайта</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Ручная загрузка</h2>
+        <p>Добавление Excel-файла вручную.</p>
+        <form action="/files/upload" enctype="multipart/form-data" method="post">
+            <input type="file" name="file" accept=".xls,.xlsx">
+            <button type="submit">Загрузить файл</button>
+        </form>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Обновление данных</h2>
+    <p>Пересобрать записи о пересдачах на основе загруженных файлов.</p>
+    <form action="/files/rebuild-db" method="post">
+        <button type="submit">Обновить данные</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Статистика дисциплин для модели риска</h2>
+    <p>
+        Загрузка файла со статистикой провалов сдачи дисциплин.
+        После загрузки модель Random Forest автоматически переобучается
+        на новых данных. Формат файла — как в <code>disciplines_template.xlsx</code>:
+        колонки «Код», «Название дисциплины», «Кредиты», «Сложность (0–1)»,
+        «Провал 1-й попытки», «Провал 2-й попытки», «Провал 3-й попытки
+        (отчисление)», «Кол-во студентов».
+    </p>
+    <form action="/files/upload-stats" enctype="multipart/form-data" method="post">
+        <input type="file" name="file" accept=".csv,.xls,.xlsx" required>
+        <button type="submit">Загрузить и переобучить модель</button>
+    </form>
+    <p class="hint">
+        Переобучение занимает 10–20 секунд. На это время сервис недоступен.
+    </p>
+</section>
+
+<section class="card">
+    <h2>Загруженные Excel-файлы</h2>
+
+    {% if files %}
+        <table>
+            <tr>
+                <th>Имя файла</th>
+                <th>Источник</th>
+                <th>Размер</th>
+                <th>Изменён</th>
+                <th>Действие</th>
+            </tr>
+            {% for file in files %}
+            <tr>
+                <td>{{ file.display_name }}</td>
+                <td>{{ file.source }}</td>
+                <td>{{ file.size_kb }} КБ</td>
+                <td>{{ file.updated_at }}</td>
+                <td>
+                    <form action="/files/delete-one" method="post" onsubmit="return confirm('Удалить файл {{ file.display_name }}?');">
+                        <input type="hidden" name="stored_name" value="{{ file.stored_name }}">
+                        <button type="submit" class="danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Файлы пока не загружены.</p>
+    {% endif %}
+</section>
+
+<section class="card">
+    <h2>Очистка</h2>
+    <form action="/files/delete-all" method="post" onsubmit="return confirm('Удалить все Excel-файлы и записи о пересдачах?');">
+        <button type="submit" class="danger">Удалить все файлы</button>
+    </form>
+</section>
+{% endblock %}

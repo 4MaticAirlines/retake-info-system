@@ -1,0 +1,37 @@
+# Окружение и секреты
+.env
+venv/
+.venv/
+
+# База данных
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+.pytest_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Загруженные пользователями файлы
+data/input/excel_files/*.xls
+data/input/excel_files/*.xlsx
+data/input/statements/*.pdf
+!data/input/excel_files/.gitkeep
+!data/input/statements/.gitkeep
+
+# Выходные артефакты модели
+data/output/*.png
+data/output/*.pdf
+data/output/metrics.txt

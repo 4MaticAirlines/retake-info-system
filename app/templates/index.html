@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-box">
+        <p class="hero-label">Национальный исследовательский технологический университет</p>
+        <h1>Система поиска пересдач</h1>
+        <p class="hero-text">
+            Сервис позволяет быстро найти информацию о пересдачах по учебной группе
+            или на основе выписки о задолженностях.
+        </p>
+
+        {% if message %}
+            <div class="message {{ message_type }}">{{ message }}</div>
+        {% endif %}
+
+        <div class="hero-actions">
+            <a href="/files/search" class="btn btn-primary">Перейти к поиску</a>
+            <a href="/files/manage" class="btn btn-secondary">Управление файлами</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

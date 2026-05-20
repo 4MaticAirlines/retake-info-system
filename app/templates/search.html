@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Поиск{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Поиск пересдач</h1>
+
+<section class="grid-two">
+    <div class="card">
+        <h2>Поиск по учебной группе</h2>
+        <form action="/files/search-by-group" method="get">
+            <input type="text" name="group" placeholder="Введите группу, например БИВТ-24">
+            <button type="submit">Найти</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Поиск по выписке о задолженностях</h2>
+        <form action="/files/search-by-statement" enctype="multipart/form-data" method="post">
+            <input type="file" name="file" accept=".pdf">
+            <button type="submit">Загрузить PDF и найти</button>
+        </form>
+        <p class="hint">Поиск по выписке поддерживается только для PDF-файлов.</p>
+    </div>
+</section>
+{% endblock %}

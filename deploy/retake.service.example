@@ -1,0 +1,36 @@
+# =============================================================
+# Заготовка systemd-сервиса для автозапуска Retake Info System.
+#
+# Использование (Linux):
+#   1. Замените YOUR_USER на имя пользователя ОС.
+#   2. Замените PATH_TO_PROJECT на абсолютный путь к проекту,
+#      например /home/student/retake_info_system.
+#   3. Скопируйте файл в /etc/systemd/system/retake.service
+#   4. sudo systemctl daemon-reload
+#   5. sudo systemctl enable retake     # запуск при загрузке
+#   6. sudo systemctl start retake      # запустить сейчас
+#   7. sudo systemctl status retake     # проверить статус
+#   8. journalctl -u retake -f          # смотреть логи
+# =============================================================
+
+[Unit]
+Description=Retake Info System - сервис мониторинга задолженностей
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+WorkingDirectory=PATH_TO_PROJECT
+Environment="PATH=PATH_TO_PROJECT/venv/bin:/usr/bin:/bin"
+ExecStart=PATH_TO_PROJECT/venv/bin/uvicorn app.main:app \
+          --host 0.0.0.0 --port 8000 --workers 2
+
+# Автоматический перезапуск при сбое
+Restart=on-failure
+RestartSec=5s
+
+# Лимиты
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

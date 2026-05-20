@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Результаты поиска</h1>
+
+<div class="card">
+    <p><strong>Тип поиска:</strong> {{ search_type }}</p>
+    <p><strong>Запрос:</strong> {{ query }}</p>
+    <p><strong>Найдено записей:</strong> {{ total_records }}</p>
+
+    {% if statement_group %}
+        <p><strong>Группа из выписки:</strong> {{ statement_group }}</p>
+    {% endif %}
+
+    {% if markers %}
+        <p><strong>Выявленные статусы задолженностей:</strong> {{ markers|join(', ') }}</p>
+    {% endif %}
+</div>
+
+{% if discipline_risks %}
+<div class="card">
+    <h2>Классификация риска отчисления по дисциплинам</h2>
+    <p class="hint">
+        Категория риска отчисления определена на основе исторических данных
+        провалов сдачи дисциплин. Дисциплины упорядочены от наиболее опасных
+        к наименее.
+    </p>
+
+    <div class="table-wrapper">
+        <table>
+            <tr>
+                <th>Дисциплина</th>
+                <th>Тип</th>
+                <th>Статус</th>
+                <th>Категория</th>
+            </tr>
+
+            {% for item in discipline_risks %}
+            <tr class="risk-row risk-{{ item.risk_category }}">
+                <td>{{ item.discipline }}</td>
+                <td>{{ item.debt_type }}</td>
+                <td>{{ item.status }}</td>
+                <td>
+                    <span class="risk-badge risk-badge-{{ item.risk_category }}">
+                        {{ item.risk_category }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="tabs">
+        {% for tab in stage_tabs %}
+            <button class="tab-button {% if loop.first %}active{% endif %}" type="button" data-tab="{{ tab.key }}">
+                {{ tab.title }}
+                <span class="tab-count">{{ records_by_stage.get(tab.key, [])|length }}</span>
+            </button>
+        {% endfor %}
+    </div>
+
+    {% for tab in stage_tabs %}
+        {% set tab_records = records_by_stage.get(tab.key, []) %}
+        <div class="tab-panel {% if loop.first %}active{% endif %}" id="tab-{{ tab.key }}">
+            <h2>{{ tab.title }}</h2>
+
+            {% if tab_records %}
+                <div class="table-wrapper">
+                    <table>
+                        <tr>
+                            <th>Этап</th>
+                            <th>Дисциплина</th>
+                            {% if search_type == "statement" %}
+                                <th>Тип задолженности</th>
+                                <th>Статус</th>
+                            {% endif %}
+                            <th>Преподаватель</th>
+                            <th>Группы</th>
+                            <th>Дата</th>
+                            <th>Дней осталось</th>
+                            <th>Риск</th>
+                            <th>Время</th>
+                            <th>Аудитория</th>
+                            {% if show_consultation %}
+                                <th>Дата консультации</th>
+                                <th>Время консультации</th>
+                                <th>Место консультации</th>
+                            {% endif %}
+                        </tr>
+
+                        {% for record in tab_records %}
+                            <tr class="risk-row risk-{{ record.risk_level|default('', true) }}">
+                                <td>{{ record.retake_type }}</td>
+                                <td>{{ record.discipline }}</td>
+                                {% if search_type == "statement" %}
+                                    <td>{{ record.debt_type }}</td>
+                                    <td>{{ record.status }}</td>
+                                {% endif %}
+                                <td>{{ record.teacher }}</td>
+                                <td>{{ record.groups }}</td>
+                                <td>{{ record.date }}</td>
+                                <td>
+                                    {% set dl = record.days_left|default(None, true) %}
+                                    {{ dl if dl is not none else "—" }}
+                                </td>
+                                <td>
+                                    {% set rl = record.risk_level|default("", true) %}
+                                    {% if rl %}
+                                        <span class="risk-badge risk-badge-{{ rl }}">{{ rl }}</span>
+                                    {% else %}—{% endif %}
+                                </td>
+                                <td>{{ record.time }}</td>
+                                <td>{{ record.room }}</td>
+                                {% if show_consultation %}
+                                    <td>{{ record.consultation_date }}</td>
+                                    <td>{{ record.consultation_time }}</td>
+                                    <td>{{ record.consultation_room }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% else %}
+                <p>В этой вкладке записей нет.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.querySelectorAll('.tab-button').forEach((button) => {
+        button.addEventListener('click', () => {
+            const target = button.dataset.tab;
+            document.querySelectorAll('.tab-button').forEach((item) => item.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach((item) => item.classList.remove('active'));
+            button.classList.add('active');
+            document.getElementById(`tab-${target}`).classList.add('active');
+        });
+    });
+</script>
+{% endblock %}

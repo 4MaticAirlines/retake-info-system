@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Система пересдач{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="header-inner">
+        <a href="/files/" class="brand">
+            <img src="/static/images/misis-logo.png" alt="МИСИС" class="brand-logo">
+            <span class="brand-text">МИСИС • Пересдачи</span>
+        </a>
+
+        <nav class="top-nav">
+            <a href="/files/">Главная</a>
+            <a href="/files/search">Поиск</a>
+            <a href="/files/manage">Файлы</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>
