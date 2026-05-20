@@ -93,7 +93,7 @@ pip install -r requirements.txt
 Скопируйте `.env.example` в `.env`:
 
 ```bash
-cp .env.example .env
+cp .env .env
 ```
 
 При желании отредактируйте `.env` под свои нужды (см. раздел
